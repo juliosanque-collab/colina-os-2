@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Instalar Colina OS
+Comment=Instala el sistema en el disco duro
+Exec=sudo -E calamares
+Icon=system-software-install
+Terminal=false
+Categories=System;
+Keywords=instalar;install;

@@ -1,0 +1,22 @@
+#!/bin/sh
+# Configuración de live-build para Colina OS (base Debian 13 "trixie").
+# Se ejecuta automáticamente con `lb config`.
+
+set -e
+
+lb config noauto \
+	--mode debian \
+	--distribution trixie \
+	--architectures amd64 \
+	--linux-flavours amd64 \
+	--archive-areas "main contrib non-free-firmware" \
+	--binary-images iso-hybrid \
+	--bootloaders "grub-efi,syslinux" \
+	--debian-installer none \
+	--memtest none \
+	--iso-application "Colina OS" \
+	--iso-publisher "Colina OS Project" \
+	--iso-volume "COLINA_OS" \
+	--image-name "colina-os" \
+	--bootappend-live "boot=live components quiet splash locales=es_ES.UTF-8 keyboard-layouts=es timezone=America/New_York" \
+	"${@}"

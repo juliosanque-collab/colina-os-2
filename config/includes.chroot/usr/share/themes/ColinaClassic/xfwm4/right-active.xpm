@@ -1,0 +1,10 @@
+/* XPM */
+static char * right_active_xpm[] = {
+"4 4 2 1",
+"a c #1d58cc",
+"b c #0a2f80",
+"aaab",
+"aaab",
+"aaab",
+"aaab"
+};

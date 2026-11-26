@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Fondo de escritorio de Colina OS
+Exec=/usr/local/bin/colina-set-wallpaper
+OnlyShowIn=XFCE;
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

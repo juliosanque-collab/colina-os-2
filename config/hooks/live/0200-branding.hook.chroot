@@ -1,0 +1,19 @@
+#!/bin/sh
+# Identidad del sistema: nombre, versión y mensajes de consola.
+set -e
+
+cat > /usr/lib/os-release <<'EOF'
+PRETTY_NAME="Colina OS 0.1"
+NAME="Colina OS"
+VERSION_ID="0.1"
+VERSION="0.1 (base Debian 13 trixie)"
+VERSION_CODENAME=trixie
+ID=colina
+ID_LIKE=debian
+HOME_URL="https://example.org/colina-os"
+SUPPORT_URL="https://example.org/colina-os/soporte"
+BUG_REPORT_URL="https://example.org/colina-os/errores"
+EOF
+
+printf 'Colina OS 0.1 \\n \\l\n\n' > /etc/issue
+printf 'Colina OS 0.1\n' > /etc/issue.net
