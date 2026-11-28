@@ -1,0 +1,78 @@
+name: Construir ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      ofimatica:
+        description: "Incluir LibreOffice (la ISO pesa unos 600 MB más)"
+        type: boolean
+        default: true
+  push:
+    branches: [main]
+    paths:
+      - "auto/**"
+      - "config/**"
+      - "tools/**"
+      - "build.sh"
+      - ".github/workflows/build-iso.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Descargar el proyecto
+        uses: actions/checkout@v4
+
+      - name: Liberar espacio en disco
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      - name: Restablecer permisos de ejecución
+        # Al subir archivos desde Windows se pierde el bit de ejecución.
+        run: |
+          chmod +x build.sh run-vm.sh tools/generate_assets.py
+          chmod +x auto/config auto/build auto/clean
+          chmod +x config/hooks/live/*.hook.chroot
+          chmod +x config/includes.chroot/usr/local/bin/*
+
+      - name: Quitar LibreOffice (opcional)
+        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.ofimatica }}
+        run: rm -f config/package-lists/office.list.chroot
+
+      - name: Construir la ISO dentro de Debian 13
+        run: |
+          docker run --rm --privileged -v "$PWD":/work -w /work debian:trixie bash -euxc '
+            apt-get update
+            apt-get install -y --no-install-recommends \
+              live-build debootstrap squashfs-tools xorriso mtools dosfstools \
+              grub-pc-bin grub-efi-amd64-bin syslinux syslinux-utils isolinux \
+              python3 python3-pil ca-certificates
+            ./build.sh
+          '
+
+      - name: Calcular suma de verificación
+        run: |
+          sudo chown -R "$USER":"$USER" .
+          ls -lh ./*.iso
+          sha256sum ./*.iso > SHA256SUMS
+
+      - name: Publicar la ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: colina-os-iso
+          path: |
+            *.iso
+            SHA256SUMS
+          compression-level: 0
+          retention-days: 14
+
+      - name: Publicar el registro de construcción
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+          if-no-files-found: ignore
+          retention-days: 14
