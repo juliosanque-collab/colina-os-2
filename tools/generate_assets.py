@@ -2,22 +2,21 @@
 """Genera los recursos gráficos originales de Colina OS.
 
   - Tema de ventanas xfwm4 "ColinaClassic" (imágenes .xpm + themerc)
-  - Fondo de escritorio colina-default.png (requiere Pillow)
+
+Los fondos están en generate_wallpapers.py y los iconos en generate_icons.py.
 
 Uso:  python3 tools/generate_assets.py
 
 Todo el arte se calcula por código; no usa ningún recurso de terceros.
 """
-import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 THEME = ROOT / "config/includes.chroot/usr/share/themes/ColinaClassic/xfwm4"
-WALL = ROOT / "config/includes.chroot/usr/share/backgrounds/colina"
 
-TITLE_H = 28    # alto de la barra de título
+TITLE_H = 30    # alto de la barra de título
 BORDER = 4      # grosor de los bordes
-CORNER_W = 6    # ancho de las esquinas
+CORNER_W = 8    # ancho de las esquinas
 BTN = 22        # tamaño de los botones de ventana
 ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
@@ -73,11 +72,11 @@ def write_xpm(path, name, pixels):
 
 # ----------------------------------------------------------- marco/título ----
 ACTIVE = dict(
-    title=[(0, "#5b9cf5"), (0.12, "#2f6fe0"), (0.6, "#1d58cc"), (1, "#1646b0")],
-    border="#1d58cc", outline="#0a2f80")
+    title=[(0, "#4b97ff"), (0.10, "#2f7bf2"), (0.45, "#1a5fdc"), (0.85, "#1350c6"), (1, "#0d41a8")],
+    border="#1655d0", outline="#0a2f80", shine="#9cc8ff")
 INACTIVE = dict(
-    title=[(0, "#b4c8ea"), (0.12, "#8fabdc"), (0.6, "#7c9bd0"), (1, "#6d8cc2")],
-    border="#7c9bd0", outline="#4a6a9a")
+    title=[(0, "#c3d3ee"), (0.10, "#a2b9e2"), (0.45, "#8aa6d6"), (0.85, "#7c9acd"), (1, "#6f8dc2")],
+    border="#8aa6d6", outline="#4a6a9a", shine="#e0e9f8")
 
 
 def style(active):
@@ -90,7 +89,7 @@ def title_color(y, active):
 
 def title_strip(active, width):
     s = style(active)
-    return [[s["outline"] if y == 0 else title_color(y, active)] * width
+    return [[s["outline"] if y == 0 else (s["shine"] if y == 1 else title_color(y, active))] * width
             for y in range(TITLE_H)]
 
 
@@ -107,10 +106,12 @@ def top_corner(active, right=False):
                     c = None
                 elif d2 > (r - 1.2) ** 2:
                     c = s["outline"]
+                elif y == 1:
+                    c = s["shine"]
                 else:
                     c = title_color(y, active)
             else:
-                c = s["outline"] if xx == 0 else title_color(y, active)
+                c = s["outline"] if xx == 0 else (s["shine"] if xx == 1 and False else title_color(y, active))
             row.append(c)
         rows.append(row)
     return rows
@@ -261,7 +262,7 @@ shadow_delta_y=0
 shadow_opacity=50
 title_horizontal_offset=6
 title_shadow_active=true
-title_shadow_inactive=false
+title_shadow_inactive=true
 title_vertical_offset_active=0
 title_vertical_offset_inactive=0
 active_text_color=#ffffff
@@ -271,65 +272,12 @@ inactive_text_shadow_color=#3f5f93
 """
 
 
-# ------------------------------------------------------------------ fondo ----
-def make_wallpaper():
-    try:
-        from PIL import Image, ImageDraw, ImageFilter
-    except ImportError:
-        print("Pillow no está instalado: se omite el fondo (pip install pillow).")
-        return
-
-    W, H = 1920, 1080
-    img = Image.new("RGB", (W, H))
-    d = ImageDraw.Draw(img)
-    sky = [(0, "#1c64cf"), (0.6, "#5aa9f0"), (1, "#d6ecff")]
-    for y in range(H):
-        d.line([(0, y), (W, y)], fill=gradient(sky, y / (H * 0.8)))
-
-    # Sol y nubes en una capa difuminada
-    img = img.convert("RGBA")
-    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ld = ImageDraw.Draw(layer)
-    ld.ellipse((1380, 90, 1620, 330), fill=(255, 244, 190, 230))
-    for cx, cy, rx, ry in [(380, 190, 190, 38), (560, 215, 150, 30),
-                           (1120, 330, 210, 40), (300, 400, 160, 26),
-                           (1500, 520, 170, 30)]:
-        ld.ellipse((cx - rx, cy - ry, cx + rx, cy + ry), fill=(255, 255, 255, 200))
-    layer = layer.filter(ImageFilter.GaussianBlur(16))
-    img = Image.alpha_composite(img, layer).convert("RGB")
-
-    def hill(base, amp, freq, phase, top, bottom, y0):
-        mask = Image.new("L", (W, H), 0)
-        pts = []
-        for x in range(0, W + 1, 6):
-            t = x / W * 2 * math.pi
-            y = (base + amp * math.sin(t * freq + phase)
-                 + amp * 0.25 * math.sin(t * freq * 2.6 + phase * 1.7))
-            pts.append((x, y))
-        ImageDraw.Draw(mask).polygon(pts + [(W, H), (0, H)], fill=255)
-        fill = Image.new("RGB", (W, H))
-        fd = ImageDraw.Draw(fill)
-        for y in range(H):
-            fd.line([(0, y), (W, y)],
-                    fill=gradient([(0, top), (1, bottom)], (y - y0) / (H - y0)))
-        img.paste(fill, (0, 0), mask)
-
-    hill(H * 0.62, 70, 1.1, 0.6, "#86cf60", "#3f8f2a", int(H * 0.45))
-    hill(H * 0.75, 55, 0.8, 2.4, "#63b83f", "#2f7a20", int(H * 0.60))
-    hill(H * 0.89, 38, 0.7, 4.2, "#44a22d", "#1f6616", int(H * 0.80))
-
-    WALL.mkdir(parents=True, exist_ok=True)
-    img.save(WALL / "colina-default.png", optimize=True)
-    print("Fondo:", WALL / "colina-default.png")
-
-
 def main():
     THEME.mkdir(parents=True, exist_ok=True)
     make_frame()
     make_buttons()
     (THEME / "themerc").write_text(THEMERC)
     print("Tema xfwm4:", THEME)
-    make_wallpaper()
 
 
 if __name__ == "__main__":
