@@ -1,0 +1,45 @@
+# Escritorio XFCE con aspecto clásico
+xfce4
+xfce4-whiskermenu-plugin
+xfce4-pulseaudio-plugin
+xfce4-power-manager
+xfce4-power-manager-plugins
+xfce4-notifyd
+xfce4-screenshooter
+xfce4-taskmanager
+xfce4-terminal
+thunar-archive-plugin
+thunar-volman
+mousepad
+ristretto
+file-roller
+gvfs-backends
+gvfs-fuse
+udisks2
+
+# Pantalla de inicio de sesión
+lightdm
+lightdm-gtk-greeter
+
+# Red y sonido
+network-manager-gnome
+pipewire-audio
+pavucontrol
+
+# Apariencia
+greybird-gtk-theme
+tango-icon-theme
+adwaita-icon-theme
+fonts-dejavu
+fonts-liberation2
+
+# Navegador (en español)
+firefox-esr
+firefox-esr-l10n-es-es
+
+# Base del sistema de escritorio
+x11-xserver-utils
+dbus-x11
+xdg-user-dirs-gtk
+sudo
+locales

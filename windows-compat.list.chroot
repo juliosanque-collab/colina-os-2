@@ -1,0 +1,15 @@
+# Compatibilidad con programas de Windows (Wine)
+# El soporte de 32 bits (wine32:i386) se instala en config/hooks/live/0100-wine32.hook.chroot
+wine
+wine64
+libwine
+fonts-wine
+winetricks
+cabextract
+p7zip-full
+zenity
+
+# Gráficos para juegos y aplicaciones 3D bajo Wine
+libgl1-mesa-dri
+mesa-vulkan-drivers
+libvulkan1

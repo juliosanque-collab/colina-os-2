@@ -1,0 +1,7 @@
+[Default Applications]
+application/x-ms-dos-executable=wine.desktop
+application/x-msdownload=wine.desktop
+application/x-msi=wine.desktop
+text/html=firefox-esr.desktop
+x-scheme-handler/http=firefox-esr.desktop
+x-scheme-handler/https=firefox-esr.desktop

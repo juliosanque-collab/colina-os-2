@@ -1,0 +1,15 @@
+# Firmware y controladores (requiere el área non-free-firmware)
+firmware-linux
+firmware-misc-nonfree
+firmware-iwlwifi
+firmware-realtek
+firmware-atheros
+firmware-amd-graphics
+amd64-microcode
+
+# Herramientas básicas
+curl
+wget
+htop
+bash-completion
+man-db

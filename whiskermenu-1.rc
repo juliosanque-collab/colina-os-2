@@ -1,0 +1,14 @@
+favorites=colina-install.desktop,firefox-esr.desktop,thunar.desktop,org.xfce.thunar.desktop,xfce4-terminal.desktop,org.xfce.terminal.desktop,mousepad.desktop,org.xfce.mousepad.desktop,colina-wine-setup.desktop
+button-title=Inicio
+button-icon=start-here
+show-button-title=true
+show-button-icon=true
+position-search-alternate=true
+position-categories-alternate=true
+category-icon-size=3
+item-icon-size=3
+menu-width=470
+menu-height=520
+launcher-show-description=true
+profile-shape=0
+confirm-session-command=true

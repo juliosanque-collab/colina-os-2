@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Compatibilidad con Windows
+Comment=Prepara Wine y las fuentes para programas de Windows
+Exec=/usr/local/bin/colina-wine-setup
+Icon=wine
+Terminal=false
+Categories=System;Settings;
+Keywords=wine;windows;exe;

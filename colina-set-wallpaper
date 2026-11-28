@@ -1,0 +1,29 @@
+#!/bin/sh
+# Aplica el fondo predeterminado de Colina OS la primera vez que se inicia sesión
+# y activa el cambio de fondo en cada arranque (entre las imágenes de la misma carpeta).
+DIR=/usr/share/backgrounds/colina
+IMG="$DIR/colina-manana.jpg"
+MARK="$HOME/.config/colina/wallpaper-applied"
+
+[ -f "$MARK" ] && exit 0
+[ -f "$IMG" ] || exit 0
+
+# Deja que xfdesktop termine de arrancar
+sleep 3
+
+# Un valor por cada monitor conectado
+for mon in $(xrandr --query 2>/dev/null | awk '/ connected/ {print $1}'); do
+  base="/backdrop/screen0/monitor${mon}/workspace0"
+  xfconf-query -c xfce4-desktop -p "$base/last-image" -n -t string -s "$IMG"
+  xfconf-query -c xfce4-desktop -p "$base/image-style" -n -t int -s 5
+  xfconf-query -c xfce4-desktop -p "$base/backdrop-cycle-enable" -n -t bool -s true
+  xfconf-query -c xfce4-desktop -p "$base/backdrop-cycle-period" -n -t int -s 3
+  xfconf-query -c xfce4-desktop -p "$base/backdrop-cycle-random-order" -n -t bool -s true
+done
+
+# Propiedades que ya existieran con otros nombres de monitor
+xfconf-query -c xfce4-desktop -l 2>/dev/null | grep '/last-image$' | while read -r p; do
+  xfconf-query -c xfce4-desktop -p "$p" -s "$IMG"
+done
+
+mkdir -p "$(dirname "$MARK")" && : > "$MARK"

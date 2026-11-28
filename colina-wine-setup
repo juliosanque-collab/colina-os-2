@@ -1,0 +1,17 @@
+#!/bin/sh
+# Prepara el entorno de Windows (Wine) del usuario y agrega fuentes comunes.
+export WINEPREFIX="${WINEPREFIX:-$HOME/.wine}"
+# Evita los avisos de instalación de Mono/Gecko durante la inicialización
+export WINEDLLOVERRIDES="mscoree,mshtml="
+
+(
+  echo "# Creando el entorno de Windows..."
+  wineboot --init
+  echo "# Instalando fuentes básicas (requiere Internet)..."
+  winetricks -q corefonts || true
+  echo "100"
+) | zenity --progress --pulsate --auto-close --no-cancel \
+    --title="Compatibilidad con Windows" --text="Preparando..."
+
+zenity --info --title="Compatibilidad con Windows" \
+  --text="Listo. Ya puedes abrir archivos .exe y .msi con doble clic." 2>/dev/null
