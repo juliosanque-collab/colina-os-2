@@ -20,10 +20,10 @@ if [ "${#faltan[@]}" -gt 0 ]; then
   exit 1
 fi
 
-# Genera el arte original (tema de ventanas y fondo) si todavía no existe
-if [ ! -f config/includes.chroot/usr/share/backgrounds/colina/colina-default.png ]; then
-  python3 tools/generate_assets.py || echo "Aviso: no se pudo generar el fondo (¿falta python3-pil?)"
-fi
+# Genera el tema de ventanas y los iconos (solo biblioteca estándar de Python).
+# Los fondos de escritorio ya vienen hechos en config/includes.chroot/usr/share/backgrounds/colina.
+python3 tools/generate_assets.py
+python3 tools/generate_icons.py
 
 lb clean
 lb config
